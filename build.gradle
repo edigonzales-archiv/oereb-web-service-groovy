@@ -1,0 +1,75 @@
+buildscript {
+	ext {
+		springBootVersion = '2.0.6.RELEASE'
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+group = 'ch.so.agi.oereb'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+
+repositories {
+	mavenCentral()
+}
+
+
+dependencies {
+    implementation('org.springframework.boot:spring-boot-starter-jdbc')
+	implementation('org.springframework.boot:spring-boot-starter-web')
+	implementation('org.codehaus.groovy:groovy-all:2.5.3')
+	runtimeOnly('org.springframework.boot:spring-boot-devtools')
+    runtimeOnly('org.springframework.boot:spring-boot-starter-actuator')
+    runtimeOnly('org.postgresql:postgresql')
+	testImplementation('org.springframework.boot:spring-boot-starter-test')
+}
+
+sourceSets {
+    generated {
+        java {
+            srcDirs  = ['src/generated/java']
+        }
+    }  
+    main {
+        compileClasspath += generated.output
+        runtimeClasspath += generated.output
+    }
+}
+
+/*
+sourceSets {
+    generated {
+        groovy {
+            srcDir 'src/generated/groovy'
+        }
+        resources {
+            srcDir 'src/generated/resources'
+        }
+    }
+    main {
+        compileClasspath += generated.output
+        runtimeClasspath += generated.output
+    }
+    test {
+        compileClasspath += generated.output
+        runtimeClasspath += generated.output
+    }
+}
+*/
+
+/*
+bootRun {
+    classpath = sourceSets.main.runtimeClasspath + sourceSets.generated.output
+}
+*/
