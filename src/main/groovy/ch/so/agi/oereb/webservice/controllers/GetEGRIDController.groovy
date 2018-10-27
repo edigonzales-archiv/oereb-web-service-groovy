@@ -32,7 +32,9 @@ class GetEGRIDController {
     @RequestMapping(value="/getegrid/{format:xml|html}/", method=RequestMethod.GET, 
         produces = MediaType.APPLICATION_XML_VALUE,
         params = "XY")
-    public ResponseEntity<?> getEgridByXY (@PathVariable("format") String format, @RequestParam(value = "XY") String xy) {
+    public ResponseEntity<?> getEgridByXY (
+        @PathVariable("format") String format, 
+        @RequestParam(value = "XY") String xy) {
         double[] coords = validateCoordinateRequestParam(xy)        
         GetEGRIDResponseType getEGRIDResponseType = getEGRIDResponseTypeService.getGetEGRIDResponseTypeByXY(coords[0], coords[1])
         
@@ -41,7 +43,7 @@ class GetEGRIDController {
             return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
         }
         
-        // TODO: When more than one egrid is found, we can return some html list with links.
+        // TODO: When more than one egrid is found, we can return a html list with links.
         if (format.equalsIgnoreCase("html") && getEGRIDResponseType.getEgridAndNumberAndIdentDN().size() == 3) {
             HttpHeaders headers = this.redirectHeaders(getEGRIDResponseType)
             return new ResponseEntity<Void>(headers, HttpStatus.FOUND)
@@ -53,7 +55,9 @@ class GetEGRIDController {
     @RequestMapping(value="/getegrid/{format:xml|html}/", method=RequestMethod.GET,
         produces = MediaType.APPLICATION_XML_VALUE,
         params = "GNSS")
-    public ResponseEntity<?> getEgridByGNSS (@PathVariable("format") String format, @RequestParam(value = "GNSS") String gnss) {
+    public ResponseEntity<?> getEgridByGNSS (
+        @PathVariable("format") String format, 
+        @RequestParam(value = "GNSS") String gnss) {
         double[] coords = validateCoordinateRequestParam(gnss)
         GetEGRIDResponseType getEGRIDResponseType = getEGRIDResponseTypeService.getGetEGRIDResponseTypeByGNSS(coords[0], coords[1])
         
@@ -72,15 +76,48 @@ class GetEGRIDController {
     
     @RequestMapping(value="/getegrid/{format:xml}/{identdn:.{12,12}}/{number}", method=RequestMethod.GET,
         produces = MediaType.APPLICATION_XML_VALUE)
-    public ResponseEntity<?> getEgridByNumberAndIdentDN (@PathVariable("identdn") String identdn, @PathVariable("number") String number) {            
-        GetEGRIDResponseType getEGRIDResponseType = getEGRIDResponseTypeService.getGetEGRIDResponseTypeByNumberAndIdentDN(number, identdn);
+    public ResponseEntity<?> getEgridByNumberAndIdentDN (
+        @PathVariable("identdn") String identdn, 
+        @PathVariable("number") String number) {            
+        GetEGRIDResponseType getEGRIDResponseType = getEGRIDResponseTypeService.getGetEGRIDResponseTypeByNumberAndIdentDN(number, identdn)
     
         if (getEGRIDResponseType.getEgridAndNumberAndIdentDN().size() == 0) {
-            log.warn("No egrid found at: " + identdn + " / " + number);
-            return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+            log.warn("No egrid found at: " + identdn + " / " + number)
+            return new ResponseEntity<Void>(HttpStatus.NO_CONTENT)
         }
         
-        return ResponseEntity.ok(getEGRIDResponseType);
+        return ResponseEntity.ok(getEGRIDResponseType)
+    }
+    
+    @RequestMapping(value="/getegrid/{format:xml|json}/{postalcode:[0-9]{4,4}}/{localisation}/{number}", method=RequestMethod.GET,
+        produces = MediaType.APPLICATION_XML_VALUE)
+    public ResponseEntity<?> getEgridByPostalcodeAndLocalisationAndNumber (
+        @PathVariable("postalcode") String postalcode,
+        @PathVariable("localisation") String localisation,
+        @PathVariable("number") String number) {
+        GetEGRIDResponseType getEGRIDResponseType = getEGRIDResponseTypeService.getGetEGRIDResponseTypeByPostalcodeAndLocalisationAndNumber(postalcode, localisation, number)
+    
+        if (getEGRIDResponseType.getEgridAndNumberAndIdentDN().size() == 0) {
+            log.warn("No egrid found at: " + postalcode + " / " + localisation + " / " + number)
+            return new ResponseEntity<Void>(HttpStatus.NO_CONTENT)
+        }
+    
+        return ResponseEntity.ok(getEGRIDResponseType)
+    }
+    
+    @RequestMapping(value="/getegrid/{format:xml|json}/{postalcode:[0-9]{4,4}}/{localisation}", method=RequestMethod.GET,
+        produces = MediaType.APPLICATION_XML_VALUE)
+    public ResponseEntity<?> getEgridByPostalcodeAndLocalisation (
+        @PathVariable("postalcode") String postalcode,
+        @PathVariable("localisation") String localisation) {
+        GetEGRIDResponseType getEGRIDResponseType = getEGRIDResponseTypeService.getGetEGRIDResponseTypeByPostalcodeAndLocalisation(postalcode, localisation)
+    
+        if (getEGRIDResponseType.getEgridAndNumberAndIdentDN().size() == 0) {
+            log.warn("No egrid found at: " + postalcode + " / " + localisation)
+            return new ResponseEntity<Void>(HttpStatus.NO_CONTENT)
+        }
+    
+        return ResponseEntity.ok(getEGRIDResponseType)
     }
 
     // Create the headers ('Location') for redirecting to the web gis client.
