@@ -89,7 +89,7 @@ class GetEGRIDController {
         return ResponseEntity.ok(getEGRIDResponseType)
     }
     
-    @RequestMapping(value="/getegrid/{format:xml|json}/{postalcode:[0-9]{4,4}}/{localisation}/{number}", method=RequestMethod.GET,
+    @RequestMapping(value="/getegrid/{format:xml}/{postalcode:[0-9]{4,4}}/{localisation}/{number}", method=RequestMethod.GET,
         produces = MediaType.APPLICATION_XML_VALUE)
     public ResponseEntity<?> getEgridByPostalcodeAndLocalisationAndNumber (
         @PathVariable("postalcode") String postalcode,
